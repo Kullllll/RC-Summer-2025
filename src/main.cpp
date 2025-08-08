@@ -109,7 +109,6 @@ void loop() {
     //Quay trái 1 đoạn
     turnLeft(motorSpeed);
     delay(400);
-
     stopMotors();
     delay(200);
 
