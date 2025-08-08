@@ -136,14 +136,7 @@ void loop() {
   Serial.println(" cm");
 
   // === Hiệu ứng LED RGB theo khoảng cách === 
-  if (distance > 0 && distance < safeDistance) {
-    // < 30cm: nháy đỏ - xanh dương luân phiên
-    setColor(255, 0, 0);     // Đỏ
-    delay(200);
-    setColor(0, 0, 255);     // Xanh dương
-    delay(50);
-  } 
-  else if (distance >= safeDistance && distance <= 50) {
+  if (distance >= safeDistance && distance <= 50) {
     // 30–50cm: màu xanh dương
     setColor(0, 0, 255);
   } 
