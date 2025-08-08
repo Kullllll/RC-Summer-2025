@@ -101,10 +101,12 @@ void loop() {
   Serial.print(distance);
   Serial.println(" cm");
 
+  //Nếu gặp vật cản
   if (distance <= safeDistance) {
     stopMotors();
     delay(300);
 
+    //Quay trái 1 đoạn
     turnLeft(motorSpeed);
     delay(400);
 
