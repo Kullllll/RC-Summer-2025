@@ -12,6 +12,11 @@ const int IN4 = 7;
 const int trigPin = 12;
 const int echoPin = 13;
 
+// LED RGB
+const int redPin = 3;
+const int greenPin = 8;
+const int bluePin = 11;   
+
 const int motorSpeed = 150;     // Tốc độ động cơ
 const int safeDistance = 30;    // Khoảng cách an toàn (cm)
 
@@ -77,6 +82,31 @@ int readUltrasonic() {
   return distance;
 }
 
+// Hàm điều khiển LED RGB
+void setColor(int red, int green, int blue) {
+  analogWrite(redPin, red);
+  analogWrite(greenPin, green);
+  analogWrite(bluePin, blue);
+}
+
+void blinkRedBlueDuringAvoid(unsigned long durationMs) {
+  unsigned long startTime = millis();
+  bool redOn = true;
+
+  while (millis() - startTime < durationMs) {
+    if (redOn) {
+      setColor(255, 0, 0);
+    } else {
+      setColor(0, 0, 255);
+    }
+    redOn = !redOn;
+
+    delay(100); // Tốc độ nháy (100ms)
+
+    // Vừa nháy LED vừa để động cơ chạy
+  }
+}
+
 
 void setup() {
   // Cấu hình các chân là OUTPUT
@@ -91,6 +121,10 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+
   Serial.begin(9600); // Debug nếu cần
 }
 
@@ -101,6 +135,27 @@ void loop() {
   Serial.print(distance);
   Serial.println(" cm");
 
+  // === Hiệu ứng LED RGB theo khoảng cách === 
+  if (distance > 0 && distance < safeDistance) {
+    // < 30cm: nháy đỏ - xanh dương luân phiên
+    setColor(255, 0, 0);     // Đỏ
+    delay(200);
+    setColor(0, 0, 255);     // Xanh dương
+    delay(50);
+  } 
+  else if (distance >= safeDistance && distance <= 50) {
+    // 30–50cm: màu xanh dương
+    setColor(0, 0, 255);
+  } 
+  else if (distance > 50) {
+    // >50cm: màu xanh lá
+    setColor(0, 255, 0);
+  } 
+  else {
+    // Nếu không đo được thì tắt đèn
+    setColor(0, 0, 0);
+  }
+
   //Nếu gặp vật cản
   if (distance <= safeDistance) {
     stopMotors();
@@ -108,31 +163,31 @@ void loop() {
 
     //Quay trái 1 đoạn
     turnLeft(motorSpeed);
-    delay(400);
+    blinkRedBlueDuringAvoid(400);
     stopMotors();
     delay(200);
 
     // Đi thẳng một đoạn để né vật
     moveForward(motorSpeed);
-    delay(1500);
+    blinkRedBlueDuringAvoid(1500);
     stopMotors();
     delay(200);
 
     // Quay phải gấp đôi thời gian đã quay trái
     turnRight(motorSpeed);
-    delay(800);
+    blinkRedBlueDuringAvoid(800);
     stopMotors();
     delay(200);
 
     // Đi thẳng thêm để vượt qua vùng vật cản
     moveForward(motorSpeed);
-    delay(1500);
+    blinkRedBlueDuringAvoid(1500);
     stopMotors();
     delay(200);
 
     // Quay trái để quay lại trục cũ
     turnLeft(motorSpeed);
-    delay(400);
+    blinkRedBlueDuringAvoid(400);
     stopMotors();
     delay(200);
 
