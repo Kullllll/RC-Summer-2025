@@ -12,52 +12,52 @@ const int IN4 = 7;
 const int trigPin = 12;
 const int echoPin = 13;
 
-const int motorSpeed = 200;     // Tốc độ động cơ
-const int safeDistance = 20;    // Khoảng cách an toàn (cm)
+const int motorSpeed = 150;     // Tốc độ động cơ
+const int safeDistance = 30;    // Khoảng cách an toàn (cm)
 
 // ========== Hàm điều khiển ==========
 
 void moveForward(int speed) {
-  digitalWrite(IN1, 1);
-  digitalWrite(IN2, 0);
-
-  digitalWrite(IN3, 1);
-  digitalWrite(IN4, 0);
-
-  analogWrite(ENA, speed);
-  analogWrite(ENB, speed+40);
-}
-
-void moveBackward(int speed) {
-  digitalWrite(IN1, 0);
-  digitalWrite(IN2, 1);
-
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-
-  analogWrite(ENA, speed);
-  analogWrite(ENB, speed);
-}
-
-void turnLeft(int speed) {
-  digitalWrite(IN1, 1);
-  digitalWrite(IN2, 0);
-
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-
-  analogWrite(ENA, speed);
-  analogWrite(ENB, speed);
-}
-
-void turnRight(int speed) {
-  digitalWrite(IN1, 0);
-  digitalWrite(IN2, 1);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
 
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 
-  analogWrite(ENA, speed);
+  analogWrite(ENA, speed+35);
+  analogWrite(ENB, speed);
+}
+
+void moveBackward(int speed) {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+
+  analogWrite(ENA, speed+35);
+  analogWrite(ENB, speed);
+}
+
+void turnLeft(int speed) {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  analogWrite(ENA, speed+35);
+  analogWrite(ENB, speed);
+}
+
+void turnRight(int speed) {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+
+  analogWrite(ENA, speed+35);
   analogWrite(ENB, speed);
 }
 
@@ -105,43 +105,33 @@ void loop() {
     stopMotors();
     delay(300);
 
-    // Ghi lại thời điểm bắt đầu quay trái
-    unsigned long t_start = millis();
-
-    // Quay trái cho đến khi không còn vật cản
-    while (readUltrasonic() <= safeDistance) {
-      turnLeft(motorSpeed);
-      delay(50);
-    }
-
-    // Tính thời gian đã quay trái
-    unsigned long t_end = millis();
-    unsigned long t_turn = t_end - t_start;
+    turnLeft(motorSpeed);
+    delay(400);
 
     stopMotors();
     delay(200);
 
     // Đi thẳng một đoạn để né vật
     moveForward(motorSpeed);
-    delay(2000);
+    delay(1500);
     stopMotors();
     delay(200);
 
     // Quay phải gấp đôi thời gian đã quay trái
     turnRight(motorSpeed);
-    delay(t_turn * 2);
+    delay(800);
     stopMotors();
     delay(200);
 
     // Đi thẳng thêm để vượt qua vùng vật cản
     moveForward(motorSpeed);
-    delay(2000);
+    delay(1500);
     stopMotors();
     delay(200);
 
     // Quay trái để quay lại trục cũ
     turnLeft(motorSpeed);
-    delay(t_turn);
+    delay(400);
     stopMotors();
     delay(200);
 
